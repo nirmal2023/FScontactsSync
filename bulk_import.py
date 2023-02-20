@@ -10,7 +10,7 @@
 	
 	Dependencies: python3 and requests 
 
-	Author: nirmalkumar.sathiamurthi@freshworks.com 	Last Updated On: Feb 20 2023
+	Author: nirmalkumar.sathiamurthi@freshworks.com   Last Updated On: Feb 20 2023
 """
 import csv, json
 import requests
@@ -29,8 +29,8 @@ processed_count = 0
 processed_jobs = []
 
 headers = {
-  'Authorization': 'Token '+ACCESS_TOKEN,
-  'Content-Type': 'application/json'
+	'Authorization': 'Token '+ACCESS_TOKEN,
+	'Content-Type': 'application/json'
 }
 
 def process_records(one_batch,retry_count=0):
@@ -47,7 +47,7 @@ def process_records(one_batch,retry_count=0):
 		if r.status_code !=200:
 			logging.debug('wait for 30s')
 			time.sleep(30)
-			process_records(one_batch,retry_count+1)	
+			process_records(one_batch,retry_count+1)  
 		else:
 			processed_jobs.append(r.json()['job_status_url'])
 	except:
@@ -67,9 +67,9 @@ with open(INPUT_FILE,'r', encoding="utf8")as f:
 			i+=1
 			continue 
 		
-		# Order of the items in CSV file														########## MODIFY THE COLUMNS in the CSV to be read ##########
+		# Order of the items in CSV file                            ########## MODIFY THE COLUMNS in the CSV to be read ##########
 		email,_,_,ncash = row[:4]
-		batch.append({"emails": email, "data":{"custom_field": {"cf_ncash": ncash}}}) 			########## MODIFY THE params in the JSON payload ##########
+		batch.append({"emails": email, "data":{"custom_field": {"cf_ncash": ncash}}})       ########## MODIFY THE params in the JSON payload ##########
 		if i>=(BATCH_SIZE + processed_count):
 			process_records(batch)
 			processed_count += len(batch)
