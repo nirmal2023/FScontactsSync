@@ -10,7 +10,7 @@
 	
 	Dependencies: python3 and requests 
 
-	Author: nirmalkumar.sathiamurthi@freshworks.com   Last Updated On: Feb 20 2023
+	Author: nirmalkumar.sathiamurthi@freshworks.com   Created On : Feb 20 2023   Last Updated On: Oct 18 2023
 """
 import csv, json
 import requests
@@ -18,7 +18,7 @@ import time
 import logging
 
 																								########## MODIFY the file name, URL and ACCESS_TOKEN ##########
-INPUT_FILE = "/Users/nsathiamurthi/Downloads/upsert_nldata_1L.csv"
+INPUT_FILE = "test.csv"
 URL = "https://***.myfreshworks.com/crm/sales/api/contacts/bulk_upsert"
 ACCESS_TOKEN = "***"
 logfile_name = "bulk_import_log.txt"
@@ -60,10 +60,11 @@ def process_records(one_batch,retry_count=0):
 with open(INPUT_FILE,'r', encoding="utf8")as f:
 	print('processing csv in batches of '+str(BATCH_SIZE))
 	print('Logs are written in ',logfile_name)
-	csvFile = csv.reader(f, delimiter=',', quotechar='|')
+	csvFile = csv.reader(f, skipinitialspace=True)
 	batch = []
 	for i,row in enumerate(csvFile):
 		if i==0:#Skip the header
+			print(row)
 			i+=1
 			continue 
 		
