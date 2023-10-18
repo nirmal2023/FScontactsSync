@@ -10,7 +10,7 @@
 	
 	Dependencies: python3 and requests 
 
-	Author: nirmalkumar.sathiamurthi@freshworks.com   Last Updated On: Feb 20 2023
+	Author: nirmalkumar.sathiamurthi@freshworks.com   Created On : Feb 20 2023   Last Updated On: Oct 18 2023
 """
 import csv, json
 import requests
