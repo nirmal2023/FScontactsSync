@@ -5,12 +5,12 @@
 
 	Usage: 
 		1. (Line numbers 21 to 23) Modify the Input file, URL and access token according the user's requirement 
-		2. (Line numbers 71 to 72) Modify the list of CSV columns, field names and the JSON parameters.  
+		2. (Line numbers 74 to 75) Modify the list of CSV columns, field names and the JSON parameters.  
 		3. Run the program :  python3 bulk_import.py
 	
 	Dependencies: python3 and requests 
 
-	Author: nirmalkumar.sathiamurthi@freshworks.com   Created On : Feb 20 2023   Last Updated On: Oct 18 2023
+	Author: nirmalkumar.sathiamurthi@freshworks.com   Created On : Feb 20 2023   Last Updated On: Oct 19 2023
 """
 import csv, json
 import requests
@@ -33,7 +33,7 @@ headers = {
 	'Content-Type': 'application/json'
 }
 
-def process_records(one_batch,retry_count=0):
+def process_records(one_batch,count,retry_count=0):
 	if retry_count >= MAX_RETRIES:
 		logging.critical('Exceeded maximum retries. Now exiting the program')
 		logging.critical('The following are the job status URLs: '+'\n '.join(processed_jobs))
@@ -46,6 +46,7 @@ def process_records(one_batch,retry_count=0):
 		logging.debug(r.json())
 		if r.status_code !=200:
 			logging.debug('wait for 30s')
+			logging.debug('Processed records Count:'+str(count))
 			time.sleep(30)
 			process_records(one_batch,retry_count+1)  
 		else:
@@ -64,20 +65,26 @@ with open(INPUT_FILE,'r', encoding="utf8")as f:
 	batch = []
 	for i,row in enumerate(csvFile):
 		if i==0:#Skip the header
-			print(row)
+			# print(row)
 			i+=1
 			continue 
 		
-		# Order of the items in CSV file                            ########## MODIFY THE COLUMNS in the CSV to be read ##########
-		email,_,_,ncash = row[:4]
-		batch.append({"emails": email, "data":{"custom_field": {"cf_ncash": ncash}}})       ########## MODIFY THE params in the JSON payload ##########
-		if i>=(BATCH_SIZE + processed_count):
-			process_records(batch)
-			processed_count += len(batch)
-			batch = []
-		i+=1
+		try:
+			# Order of the items in CSV file                            ########## MODIFY THE COLUMNS in the CSV to be read ##########
+			email,_,_,ncash = row[:4]
+			batch.append({"emails": email, "data":{"custom_field": {"cf_ncash": ncash}}})       ########## MODIFY THE params in the JSON payload ##########
+			if i>=(BATCH_SIZE + processed_count):
+				process_records(batch,processed_count)
+				processed_count += len(batch)
+				batch = []
+			i+=1
+		except:
+			print("Error processing Row. So skipping :"+str(i))
+			print(row)
+			logging.critical('Error in row. So skipping: ')
+			logging.critical(row)
 	if len(batch)>0:
-		process_records(batch)
+		process_records(batch,processed_count)
 		processed_count += len(batch)
 
 logging.debug('Data inserted through multiple jobs. The following are the job status URLs: '+'\n '.join(processed_jobs))
